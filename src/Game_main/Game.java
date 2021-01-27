@@ -17,6 +17,7 @@ import World.World;
 import entities.Enemy;
 import entities.Entity;
 import entities.Player;
+import entities.Shoot;
 import grafics.SpriteSheet;
 import grafics.UI;
 
@@ -37,6 +38,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 	public static Player player;
 	public static Enemy enemy;
 	public static UI ui;
+	public static List<Shoot> shoots;
 	
 	//construtor da classe
 	public Game() {
@@ -48,6 +50,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
+		shoots = new ArrayList<Shoot>();
 		sheet = new SpriteSheet("/player_sheet.png");
 		atlas = new SpriteSheet("/atlas.png");
 		enemy_sheet = new SpriteSheet("/enemy_sheet.png");
@@ -73,6 +76,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		Game game = new Game();
 		game.start();
 	}
+
 	//inicio do jogo
 	public synchronized void start() {
 		isRunning = true;
@@ -95,6 +99,9 @@ public class Game extends Canvas implements Runnable, KeyListener{
 			Entity e = entities.get(i);
 			e.tick();
 		}
+		for(int i = 0; i < shoots.size(); i++) {
+			shoots.get(i).tick();
+		}
 	}
 	//renderização das imagens
 	public void render() {
@@ -112,6 +119,9 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		for(int i = 0; i < entities.size(); i ++) {
 			Entity e = entities.get(i);
 			e.render(g);
+		}
+		for(int i = 0; i < shoots.size(); i++) {
+			shoots.get(i).render(g);
 		}
 		
 		ui.render(g);
@@ -175,6 +185,14 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		else if(e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(true);
 		}
+		//tiro
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.setShoot(true);
+			player.fire();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_R) {
+			player.reloadAmmo();
+		}
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -194,6 +212,8 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		else if(e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(false);
 		}
-		
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.setShoot(false);
+		} 
 	}
 }
