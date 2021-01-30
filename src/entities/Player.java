@@ -2,14 +2,11 @@ package entities;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Random;
 
 import Game_main.Game;
 import World.Camera;
 import World.World;
-import grafics.SpriteSheet;
-import grafics.UI;
 
 public class Player extends Entity{
 	
@@ -24,7 +21,7 @@ public class Player extends Entity{
 	private boolean moved = false;
 	private boolean shoot = false, isShooting = false;
 	
-	private int shoots = 6, maxShoots = 6, ammo = 30;
+	private int shoots = 6, maxShoots = 6, ammo = 30, index_shoot = 0, max_index_shoot = 5;
 	
 	Random rand = new Random();
 	
@@ -62,7 +59,19 @@ public class Player extends Entity{
 	public void tick() {
 		//render_shoot();
 		render_idle();
+		render_shoot();
 		moved = false;
+
+		if(shoot && shoots > 0) {
+			isShooting = true;
+		}
+		if(isShooting) {	
+			if(frames_idle > 7 )index_shoot ++;
+			if(index_shoot == 3) fire();
+			if(index_shoot > max_index_shoot) index_shoot = 0;
+			if(index_shoot == 0) isShooting = false;
+		}
+		
 		if(right && World.isFree(this.getX() + speed, this.getY())) {
 			moved = true;
 			dir = right_dir;
@@ -78,7 +87,7 @@ public class Player extends Entity{
 			dir = up_dir;
 			setY(getY() - speed);
 		}
-		if(down && World.isFree(this.getX(), this.getY() + speed)) {
+		else if(down && World.isFree(this.getX(), this.getY() + speed)) {
 			moved = true;
 			dir = down_dir;
 			setY(getY() + speed);
@@ -105,27 +114,14 @@ public class Player extends Entity{
 			}
 		}
 		
+		
 		this.checkMoneyBag();
 		
-		Camera.setX(Camera.clamp(getY() -(Game.WIDTH/2), 0, World.WIDTH * 16 - Game.WIDTH));
+		Camera.setX(Camera.clamp(getX() -(Game.WIDTH/2), 0, World.WIDTH * 16 - Game.WIDTH));
 		Camera.setY(Camera.clamp(getY() -( Game.HEIGHT/2), 0, World.HEIGHT * 16- Game.HEIGHT));
 		
 		if(life <= 0 ) {
-			Game.entities.clear();
-			Game.enemies.clear();
-			
-			Game.entities = new ArrayList<Entity>();
-			Game.enemies = new ArrayList<Enemy>();
-			Game.sheet = new SpriteSheet("/player_sheet.png");
-			Game.atlas = new SpriteSheet("/atlas.png");
-			Game.enemy_sheet = new SpriteSheet("/enemy_sheet.png");
-			Game.player = new Player(0, 0 ,32, 32, Game.sheet.getSprite(15, 9, 32, 32));
-			Game.ui = new UI();
-			
-			Game.entities.add(Game.player);
-			Game.world = new World("/map.png");
-			
-			return;
+			Game.gameState = "over";
 		}
 	}
 	
@@ -133,8 +129,9 @@ public class Player extends Entity{
 		for(int i = 0; i < Game.entities.size(); i ++) {
 			Entity atual = Game.entities.get(i);
 			if(atual instanceof MoneyBag) {
-				if(Entity.isColidding(this, atual)) {
+				if(Entity.isColliding(this, atual)) {
 					money += rand.nextInt(55) + 20;
+					Game.money_bags_left --;
 					Game.entities.remove(atual);
 				}
 			}
@@ -149,44 +146,44 @@ public class Player extends Entity{
 	}
 	@Override
 	public void render(Graphics g) {
+		
 		if(isShooting) {
-			g.drawImage(shooting[index_idle], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-			if(index_idle >= 4) isShooting = false;
+			g.drawImage(shooting[index_shoot],this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
+		
 		else if(moved == false && isShooting == false) { //parado
 			g.drawImage(idle_player[index_idle], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
-		else if(dir == up_dir && isShooting == false) { //cima
+		else if(dir == up_dir) { //cima
 			g.drawImage(up_Player[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
-		else if(dir == down_dir && isShooting == false) {//baixo
+		else if(dir == down_dir) {//baixo
 			g.drawImage(down_Player[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
-		else if(dir == right_dir && isShooting == false) { // direita
+		else if(dir == right_dir) { // direita
 			g.drawImage(right_Player[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
-		else if(dir == left_dir && isShooting == false) {//esquerda
+		else if(dir == left_dir) {//esquerda
 			g.drawImage(left_Player[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		}
 	}
 	public void render_shoot() {
 		//atirando
-		if(isShooting) {
-			for(int i = 0; i < 6; i ++) {
-				if(dir == right_dir) { //direita
-					shooting[i] = Game.sheet.getSprite(0 + (i * 32), 288, 32, 32);
-				}
-				else if(dir == left_dir) { //esquerda
-					shooting[i] = Game.sheet.getSprite(0 + (i * 32), 384, 32, 32);
-				}
-				else if(dir == up_dir) { //cima
-					shooting[i] = Game.sheet.getSprite(0 + (i * 32), 192, 32, 32);
-				}
-				else if(dir == down_dir) { //baixo
-					shooting[i] = Game.sheet.getSprite(0 + (i * 32), 64, 32, 32);
-				}
+		for(int i = 0; i < 6; i ++) {
+			if(dir == right_dir) { //direita
+				shooting[i] = Game.sheet.getSprite(0 + (i * 32), 288, 32, 32);
+			}
+			else if(dir == left_dir) { //esquerda
+				shooting[i] = Game.sheet.getSprite(0 + (i * 32), 384, 32, 32);
+			}
+			else if(dir == up_dir) { //cima
+				shooting[i] = Game.sheet.getSprite(0 + (i * 32), 192, 32, 32);
+			}
+			else if(dir == down_dir) { //baixo
+				shooting[i] = Game.sheet.getSprite(0 + (i * 32), 64, 32, 32);
 			}
 		}
+		
 	}
 
 	public void render_idle() {
@@ -211,9 +208,10 @@ public class Player extends Entity{
 	
 	public void fire() {
 
-		if(shoot && shoots > 0 && isShooting == false) {
+		if(shoot && shoots > 0) {
+			shoot = false;
 			isShooting = true;
-			render_shoot();
+
 			shoots --;
 			
 			int dx = 0, dy = 0, px = 0, py = 0;
@@ -237,8 +235,15 @@ public class Player extends Entity{
 				px = 6;
 			}
 			
-			Shoot disparo = new Shoot(this.getX() + px, this.getY() + py, 5, 3, null, dx, dy);
-			Game.shoots.add(disparo);
+			if(dir == right_dir || dir == left_dir) {
+				Shoot disparo = new Shoot(this.getX() + px, this.getY() + py, 5, 3, null, dx, dy);
+				Game.shoots.add(disparo);
+			}
+			else {
+				Shoot disparo = new Shoot(this.getX() + px, this.getY() + py, 3, 5, null, dx, dy);
+				Game.shoots.add(disparo);
+			}
+
 		}
 	}
 	

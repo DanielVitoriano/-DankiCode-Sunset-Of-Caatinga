@@ -3,13 +3,19 @@ package Game_main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -26,10 +32,20 @@ public class Game extends Canvas implements Runnable, KeyListener{
 	private static final long serialVersionUID = 1L;
 	
 	public static int WIDTH = 320, HEIGHT = 240, SCALE = 2;
-	private boolean isRunning;
+	private boolean isRunning, showMessengerGameOver = true, restartGame = false;
+	public static int money_bags_left = 0;
+	private int cur_level = 1, max_level = 2, framesOver = 0;
+	public static String gameState = "menu";
+	public Random rand = new Random();
+	
+	public InputStream stream1 = ClassLoader.getSystemClassLoader().getResourceAsStream("old.ttf");
+	public static Font  oldFont;
+	
+	public InputStream stream2 = ClassLoader.getSystemClassLoader().getResourceAsStream("sunset.ttf");
+	public static Font  sunsetFont;
 	
 	public static World world;
-	public static SpriteSheet sheet, atlas, enemy_sheet;
+	public static SpriteSheet sheet, atlas, enemy_sheet, sprite_menu;
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
 	public BufferedImage image;
@@ -39,6 +55,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 	public static Enemy enemy;
 	public static UI ui;
 	public static List<Shoot> shoots;
+	public static Menu menu;
 	
 	//construtor da classe
 	public Game() {
@@ -54,16 +71,25 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		sheet = new SpriteSheet("/player_sheet.png");
 		atlas = new SpriteSheet("/atlas.png");
 		enemy_sheet = new SpriteSheet("/enemy_sheet.png");
+		sprite_menu  = new SpriteSheet("/back_menu.png");
 		player = new Player(0, 0 ,32, 32, sheet.getSprite(15, 9, 32, 32));
 		ui = new UI();
 		
 		entities.add(player);
-		world = new World("/map.png");
+		world = new World("/level1.png");
 		
+		menu = new Menu();
+		try {
+			oldFont = Font.createFont(Font.TRUETYPE_FONT, stream1).deriveFont(40f);
+			sunsetFont = Font.createFont(Font.TRUETYPE_FONT, stream2).deriveFont(65f);
+		} catch (FontFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	//janela
 	public void initFrame() {
-		frame = new JFrame("RPG");
+		frame = new JFrame("SUNSEET OF CAATINGA");
 		frame.add(this);
 		frame.setResizable(false);
 		frame.pack();
@@ -95,14 +121,46 @@ public class Game extends Canvas implements Runnable, KeyListener{
 	}
 	//update/ atualizações na tela do jogo/ chamadas
 	public void tick() {
-		for(int i = 0; i < entities.size(); i ++) {
-			Entity e = entities.get(i);
-			e.tick();
+		if(gameState == "normal") {
+			this.restartGame = false;
+			for(int i = 0; i < entities.size(); i ++) {
+				Entity e = entities.get(i);
+				e.tick();
+			}
+			for(int i = 0; i < shoots.size(); i++) {
+				shoots.get(i).tick();
+			}
+			
+			if(money_bags_left <= 0) {
+				cur_level ++;
+				if(cur_level > max_level) {
+					cur_level = 1;
+				}
+				String newWorld = "level"  + cur_level + ".png";
+				World.restart_game(newWorld);
+			}
 		}
-		for(int i = 0; i < shoots.size(); i++) {
-			shoots.get(i).tick();
+		else if(gameState == "over"){
+			this.framesOver ++;
+			if(this.framesOver == 15) {
+				this.framesOver = 0;
+				if(this.showMessengerGameOver) this.showMessengerGameOver = false;
+				else this.showMessengerGameOver = true;
+			}
+			if(restartGame) {
+				this.restartGame = false;
+				money_bags_left = 0;
+				gameState = "normal";
+				cur_level = 1;
+				String newWorld = "level"  + cur_level + ".png";
+				World.restart_game(newWorld);
+				}
+			}
+		else if (gameState == "menu") {
+				menu.tick();
+			}
 		}
-	}
+		
 	//renderização das imagens
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
@@ -129,6 +187,29 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
+		
+		Graphics2D g3 = (Graphics2D) g;
+		g3.setColor(new Color(230,30,5, 35));
+		g3.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+		
+		if(gameState == "over") {
+			
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(new Color(0,0,0, 100));
+			g2.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+			
+			g.setFont(new Font ("Arial", Font.BOLD, 28));
+			g.setColor(Color.white);
+			g.drawString("GAME OVER", WIDTH - 95, HEIGHT + 5);
+			
+			g.setFont(new Font ("Arial", Font.BOLD, 14));
+			g.setColor(Color.WHITE);
+			if(showMessengerGameOver) g.drawString("PRESS ENTER", WIDTH - 55, HEIGHT + 20);
+		}
+		else if(gameState == "menu") {
+			menu.render(g);
+		}
+		
 		bs.show();
 	}
 	@Override
@@ -180,19 +261,28 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		//cima
 		if(e.getKeyCode() == KeyEvent.VK_W) {
 			player.setUp(true);
+			
+			if(gameState == "menu") menu.up = true;
 		}
 		//baixo
 		else if(e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(true);
+			
+			if(gameState == "menu") menu.down = true;
 		}
 		//tiro
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 			player.setShoot(true);
-			player.fire();
+			//player.fire();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_R) {
 			player.reloadAmmo();
 		}
+		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			restartGame = true;
+			if(gameState == "menu") menu.enter = true;
+		}
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) menu.pause = true;
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -212,8 +302,8 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		else if(e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(false);
 		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			player.setShoot(false);
-		} 
+		
 	}
+
+	
 }

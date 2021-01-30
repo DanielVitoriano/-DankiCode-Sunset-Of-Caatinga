@@ -21,7 +21,7 @@ public class UI {
 		
 		g.setColor(Color.white);
 		g.setFont(new Font("Arial", Font.BOLD, 8));
-		g.drawString("Money: " + Game.player.getMoney(),90, 18);
+		g.drawString("Money: R$" + Game.player.getMoney() + " Bags left: " + Game.money_bags_left,90, 18);
 		
 		if(Game.player.getAmmo() >= 20) {
 			g.setColor(Color.GREEN);

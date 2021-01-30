@@ -3,6 +3,7 @@ package World;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -10,6 +11,9 @@ import Game_main.Game;
 import entities.Enemy;
 import entities.Entity;
 import entities.MoneyBag;
+import entities.Player;
+import grafics.SpriteSheet;
+import grafics.UI;
 
 public class World {
 	
@@ -47,6 +51,7 @@ public class World {
 					}
 					else if(pixelAtual == 0xFF0bf300) {//verde
 						Game.entities.add(new MoneyBag(xx * 16, yy * 16, 16,16, Entity.money_bag));
+						Game.money_bags_left++;
 					}
 
 				}
@@ -56,6 +61,25 @@ public class World {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public static void restart_game(String level) {
+		Game.entities.clear();
+		Game.enemies.clear();
+		
+		Game.entities = new ArrayList<Entity>();
+		Game.enemies = new ArrayList<Enemy>();
+		Game.sheet = new SpriteSheet("/player_sheet.png");
+		Game.atlas = new SpriteSheet("/atlas.png");
+		Game.enemy_sheet = new SpriteSheet("/enemy_sheet.png");
+		Game.player = new Player(0, 0 ,32, 32, Game.sheet.getSprite(15, 9, 32, 32));
+		Game.ui = new UI();
+		
+		Game.entities.add(Game.player);
+		Game.world = new World("/" + level);
+		
+		return;
 	}
 	
 	public static boolean isFree(int xNext, int yNext) {

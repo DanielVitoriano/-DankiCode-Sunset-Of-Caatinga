@@ -10,7 +10,7 @@ import World.Camera;
 
 public class Enemy extends Entity {
 
-	private int speed = 1, rage = 70;
+	private int speed = 1, rage = 70, life = 2;
 	double distance;
 	
 	public int dir, right_dir = 1, left_dir = 2, up_dir = 3, down_dir = 4;
@@ -103,6 +103,10 @@ public class Enemy extends Entity {
 				}
 			}
 		}
+				
+		collidingShoot();
+		if(life<=0) destroySelf();
+		
 	}
 	
 	@Override
@@ -142,11 +146,29 @@ public class Enemy extends Entity {
 		}
 	}
 	
+	public void destroySelf() {
+		Game.enemies.remove(this);
+		Game.entities.remove(this);
+		return;
+	}
+	
 	public boolean isPlayerColliding() {
 		Rectangle enemyCurrent = new Rectangle(this.getX() + 8, this.getY() + 8, 16, 16);
 		Rectangle playerCollider = new Rectangle(Game.player.getX() + 8, Game.player.getY(), 16, 32);
 		
 		return enemyCurrent.intersects(playerCollider);
+	}
+	
+	public void collidingShoot() {
+		for(int i = 0; i < Game.shoots.size(); i++) {
+			Entity e = Game.shoots.get(i);
+			if(Entity.isColliding(this, e)){
+				life--;
+				System.out.println(this.life + " " + i);
+				Game.shoots.remove(e);
+				return;
+			}
+		}
 	}
 	
 	public boolean isColliding(int xnext, int ynext) {
