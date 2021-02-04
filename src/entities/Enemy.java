@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import Game_main.Game;
+import World.AStar;
 import World.Camera;
+import World.Vector2i;
 
 public class Enemy extends Entity {
 
@@ -53,22 +55,30 @@ public class Enemy extends Entity {
 		render_idle();
 		distance = Math.sqrt(Math.pow(this.getX() - Game.player.getX(), 2) + Math.pow(this.getY() - Game.player.getY(), 2));
 		if(distance <= rage && distance >= 16) {
-			if(this.getX() > Game.player.getX() && World.World.isFree(this.getX() - speed, this.getY()) && !isColliding(this.getX() - speed, this.getY())) {
+			
+			/*if(path == null || path.size() == 0) {
+				Vector2i start = new Vector2i((int)this.getX()/16, (int)this.getY()/16);
+				Vector2i end = new Vector2i((int)this.getX()/16, (int)this.getY()/16);
+				path = AStar.findPath(Game.world, start, end);
+			}
+			followPath(path, (double)speed); */
+			
+			if(this.getX() > Game.player.getX()){
 				this.setX(getX() - speed); //esquerda
 				dir = left_dir;
 				moved = true;
 			}
-			else if(this.getX() < Game.player.getX() && World.World.isFree(this.getX() + speed, this.getY()) && !isColliding(this.getX() + speed, this.getY())) {
+			else if(this.getX() < Game.player.getX()) {
 				this.setX(getX() + speed); // direita
 				dir = right_dir;
 				moved = true;
 			}
-			if(this.getY() > Game.player.getY() && World.World.isFree(this.getX(), this.getY() - speed) && !isColliding(this.getX(), this.getY() - speed)) {
+			if(this.getY() > Game.player.getY()) {
 				this.setY(getY() - speed); //cima
 				dir = up_dir;
 				moved = true;
 			}
-			else if(this.getY() < Game.player.getY() && World.World.isFree(this.getX(), this.getY() + speed) && !isColliding(this.getX(), this.getY() + speed)) {
+			else if(this.getY() < Game.player.getY()) {
 				this.setY(getY() + speed); //baixo
 				dir = down_dir;
 				moved = true;
@@ -164,7 +174,6 @@ public class Enemy extends Entity {
 			Entity e = Game.shoots.get(i);
 			if(Entity.isColliding(this, e)){
 				life--;
-				System.out.println(this.life + " " + i);
 				Game.shoots.remove(e);
 				return;
 			}

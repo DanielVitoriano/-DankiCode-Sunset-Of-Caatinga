@@ -31,7 +31,7 @@ public class Shoot extends Entity{
 	}
 	
 	public void render(Graphics g) {
-		g.setColor(Color.DARK_GRAY);
+		g.setColor(Color.GRAY);
 		g.fillOval(this.getX() - Camera.getX(), this.getY() - Camera.getY(), this.getWIDTH(), this.getHEIGHT());
 	}
 }

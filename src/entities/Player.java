@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import Game_main.Game;
+import Game_main.Sound;
 import World.Camera;
 import World.World;
 
@@ -129,6 +130,7 @@ public class Player extends Entity{
 		for(int i = 0; i < Game.entities.size(); i ++) {
 			Entity atual = Game.entities.get(i);
 			if(atual instanceof MoneyBag) {
+				//Sound.money_bag.play();
 				if(Entity.isColliding(this, atual)) {
 					money += rand.nextInt(55) + 20;
 					Game.money_bags_left --;
@@ -218,12 +220,12 @@ public class Player extends Entity{
 			if(dir == right_dir) {
 				dx = 1;
 				px = 32;
-				py = 16;
+				py = 14;
 			}
 			else if(dir == left_dir) {
 				dx = -1;
 				px = -8;
-				py = 16;
+				py = 14;
 			}
 			else if(dir == up_dir) {
 				dy = -1;
@@ -232,7 +234,7 @@ public class Player extends Entity{
 			else if(dir == down_dir) {
 				dy = 1;
 				py = 32;
-				px = 6;
+				px = 8;
 			}
 			
 			if(dir == right_dir || dir == left_dir) {
@@ -243,13 +245,14 @@ public class Player extends Entity{
 				Shoot disparo = new Shoot(this.getX() + px, this.getY() + py, 3, 5, null, dx, dy);
 				Game.shoots.add(disparo);
 			}
-
+			Sound.shoot.play();
 		}
 	}
 	
 	public void reloadAmmo() {
 		int dif = maxShoots - shoots;
-		if(ammo > 0) {
+		if(ammo > 0 && shoots < 6) {
+			Sound.reload.play();
 			if(ammo - dif >= 0) {
 				ammo -= dif;
 				shoots += dif;

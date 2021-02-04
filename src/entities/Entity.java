@@ -3,9 +3,12 @@ package entities;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import Game_main.Game;
 import World.Camera;
+import World.Node;
+import World.Vector2i;
 
 public class Entity {
 
@@ -17,6 +20,7 @@ public class Entity {
 	private BufferedImage sprite;
 	
 	private int maskx, masky, mwidth, mheight;
+	protected List<Node> path;
 	
 	public Entity(int x, int y, int width, int height, BufferedImage sprite) {
 		this.x = x;
@@ -33,6 +37,25 @@ public class Entity {
 
 	public void tick() {
 		
+	}
+	
+	public void followPath(List<Node> path, double speed) {
+		if(path != null) {
+			if(path.size() > 0) {
+				Vector2i target = path.get(path.size() - 1).tile;
+				//xprev = x;
+				//yprev = y;
+				if(x < target.x * 16) x+= speed;
+				else if(x > target.x * 16) x-= speed;
+
+				if(y < target.y * 16) y+= speed;
+				else if(y > target.y * 16) y-= speed;
+				
+				if(x == target.x * 16 && y == target.y * 16) {
+					path.remove(path.size() - 1);
+				}
+			}
+		}
 	}
 	
 	public void setMask(int maskx, int masky, int mwidth, int mheight) {

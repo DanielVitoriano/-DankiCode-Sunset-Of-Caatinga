@@ -31,8 +31,8 @@ public class Game extends Canvas implements Runnable, KeyListener{
 
 	private static final long serialVersionUID = 1L;
 	
-	public static int WIDTH = 320, HEIGHT = 240, SCALE = 2;
-	private boolean isRunning, showMessengerGameOver = true, restartGame = false;
+	public static int WIDTH = 320, HEIGHT = 240, SCALE = 2, fps_show = 0;
+	private boolean isRunning, showMessengerGameOver = true, restartGame = false, saveGame = false;
 	public static int money_bags_left = 0;
 	private int cur_level = 1, max_level = 2, framesOver = 0;
 	public static String gameState = "menu";
@@ -76,7 +76,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		ui = new UI();
 		
 		entities.add(player);
-		world = new World("/level1.png");
+		world = new World("/level" + cur_level + ".png");
 		
 		menu = new Menu();
 		try {
@@ -154,11 +154,20 @@ public class Game extends Canvas implements Runnable, KeyListener{
 				cur_level = 1;
 				String newWorld = "level"  + cur_level + ".png";
 				World.restart_game(newWorld);
+				gameState = "menu";
 				}
 			}
-		else if (gameState == "menu") {
+		else if (gameState == "menu" || gameState == "pause") {
 				menu.tick();
 			}
+		if(gameState == "pause") {
+			if(this.saveGame) {
+				this.saveGame = false;
+				String[] opt1 = {"level"};
+				int[] opt2 = {this.cur_level};
+				Save.saveGame(opt1, opt2, 1);
+			}
+		}
 		}
 		
 	//renderização das imagens
@@ -206,9 +215,13 @@ public class Game extends Canvas implements Runnable, KeyListener{
 			g.setColor(Color.WHITE);
 			if(showMessengerGameOver) g.drawString("PRESS ENTER", WIDTH - 55, HEIGHT + 20);
 		}
-		else if(gameState == "menu") {
+		else if(gameState == "menu" || gameState == "pause") {
 			menu.render(g);
 		}
+		
+		g.setFont(new Font ("Arial", Font.BOLD, 14));
+		g.setColor(Color.white);
+		g.drawString("FPS: " + fps_show, WIDTH + 260, 15);
 		
 		bs.show();
 	}
@@ -235,7 +248,8 @@ public class Game extends Canvas implements Runnable, KeyListener{
 				delta--;
 				}
 			if(System.currentTimeMillis() - timer >= 1000) {
-				System.out.println("FPS: " + frames);
+				fps_show = frames;
+				//System.out.println("FPS: " + frames);
 				frames = 0;
 				timer += 1000;
 			}
@@ -280,9 +294,15 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		}
 		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 			restartGame = true;
-			if(gameState == "menu") menu.enter = true;
+			if(gameState == "menu" || gameState == "pause") menu.enter = true;
 		}
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) menu.pause = true;
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			Menu.pause = true;
+			gameState = "pause";
+		}
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			saveGame = true;
+		}
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {

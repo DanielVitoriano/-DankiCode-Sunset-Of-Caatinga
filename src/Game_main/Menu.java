@@ -1,14 +1,18 @@
 package Game_main;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class Menu {
 	
 	private String[] options = {"New Game", "Load Game", "Exit"};
-	public int currentOption = 0, maxOptions = options.length - 1, red = 230, frames = 0,maxFrames = 15;
-	public boolean up, down, enter, pause;
+	public int currentOption = 0, maxOptions = options.length - 1, red = 255, frames = 0,maxFrames = 15;
+	public boolean up, down, enter, somar = false;
+	public static boolean pause;
 	private BufferedImage[] back_menu, gado;
 	
 	public Menu() {
@@ -20,29 +24,55 @@ public class Menu {
 	}
 	
 	public void tick() {
-		if(up) {
-			up = false;
-			currentOption --;
-			if(currentOption < 0) currentOption = maxOptions;
-		}
-		if(down) {
-			down = false;
-			currentOption ++;
-			if(currentOption > maxOptions) currentOption = 0;
-		}
-		frames++;
-		if(frames == maxFrames ){
-			 red++;
-			 if(red == 255) {
-				 red = 230;
-			 }
-		}
+		File file = new File("save.txt");
+		if(file.exists()) Save.saveExists = true;
+		else Save.saveExists = false;
+		if(Game.gameState == "menu") {
+			Sound.bg_menu.loop();
+			if(up) {
+				Sound.menu_options.play();
+				up = false;
+				currentOption --;
+				if(currentOption < 0) currentOption = maxOptions;
+			}
+			if(down) {
+				Sound.menu_options.play();
+				down = false;
+				currentOption ++;
+				if(currentOption > maxOptions) currentOption = 0;
+			}
+			frames++;
+			if(frames == maxFrames ){
+				frames = 0;
+				if(somar) red++;
+				else if (!somar) red--;
+				if(red == 255) somar = false;
+				else if(red == 230) somar = true;
+			}
+		}	
 		if(enter) {
+			Sound.menu_select.play();
+			Sound.bg_menu.stop();
 			enter = false;
-			if(options[currentOption] == "New Game") Game.gameState = "normal";
+			if(options[currentOption] == "New Game") {
+				Game.gameState = "normal";
+				pause = false;
+				file = new File("save.txt");
+				file.delete();
+			}
+			else if(options[currentOption] == "Load Game") {
+				file = new File("save.txt");
+				if(file.exists()) {
+					System.out.println("carregando");
+					String saver = Save.loadGame(10);
+					Save.applySave(saver);
+				}
+			}
+			else if(options[currentOption] == "Exit") System.exit(1);
 		}
 	}
 	public void render(Graphics g) {
+		
 		if(!pause) {
 			g.drawImage(back_menu[0], 0, 0, null);
 	
@@ -77,7 +107,12 @@ public class Menu {
 			}
 		}
 		else {
-			
+			g.setFont(new Font ("Arial", Font.BOLD, 14));
+			g.setColor(Color.WHITE);
+			g.drawString("PRESS ENTER", Game.WIDTH - 55, Game.HEIGHT);
 		}
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(new Color(0,0,0, 30));
+		g2.fillRect(0,0,Game.WIDTH * Game.SCALE, Game.HEIGHT * Game.SCALE);
 	}
 }

@@ -9,6 +9,7 @@ import Game_main.Game;
 public class UI {
 
 	public void render(Graphics g) {
+		
 		g.setColor(Color.red);
 		g.fillRect(10, 10, 70, 10);
 		
@@ -16,11 +17,11 @@ public class UI {
 		g.fillRect(10, 10, (int) ((Game.player.getLife()/Game.player.getMaxLife()) * 70), 10);
 		
 		g.setColor(Color.white);
-		g.setFont(new Font("Arial", Font.BOLD, 8));
+		g.setFont(new Font("Arial", Font.BOLD, 10));
 		g.drawString(Game.player.getLife() + "/" + Game.player.getMaxLife(),14, 18);
 		
 		g.setColor(Color.white);
-		g.setFont(new Font("Arial", Font.BOLD, 8));
+		g.setFont(new Font("Arial", Font.BOLD, 10));
 		g.drawString("Money: R$" + Game.player.getMoney() + " Bags left: " + Game.money_bags_left,90, 18);
 		
 		if(Game.player.getAmmo() >= 20) {
