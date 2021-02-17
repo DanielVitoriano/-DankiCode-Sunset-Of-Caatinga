@@ -13,6 +13,7 @@ import World.World;
 public class Save {
 	
 	public static boolean saveExists = false, saveGame = false;
+	public static int encode = 10;
 	
 	public static String loadGame(int encode) {
 		String line = "";

@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -165,7 +166,8 @@ public class Game extends Canvas implements Runnable, KeyListener{
 				this.saveGame = false;
 				String[] opt1 = {"level"};
 				int[] opt2 = {this.cur_level};
-				Save.saveGame(opt1, opt2, 1);
+				Save.saveGame(opt1, opt2, Save.encode);
+				System.out.println("jogo salvo, confia!");
 			}
 		}
 		}
@@ -182,7 +184,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		world.render(g);
-		
+		Collections.sort(entities, Entity.nodeSortert);
 		for(int i = 0; i < entities.size(); i ++) {
 			Entity e = entities.get(i);
 			e.render(g);
@@ -301,7 +303,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 			gameState = "pause";
 		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			saveGame = true;
+			if(gameState == "pause")saveGame = true;
 		}
 	}
 	@Override

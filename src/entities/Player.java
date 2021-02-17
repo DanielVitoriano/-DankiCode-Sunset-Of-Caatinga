@@ -58,11 +58,15 @@ public class Player extends Entity{
 	}
 	@Override
 	public void tick() {
-		//render_shoot();
+		depht = 1;
 		render_idle();
 		render_shoot();
 		moved = false;
 
+		if(shoots == 0) {
+			reloadAmmo();
+		}
+		
 		if(shoot && shoots > 0) {
 			isShooting = true;
 		}

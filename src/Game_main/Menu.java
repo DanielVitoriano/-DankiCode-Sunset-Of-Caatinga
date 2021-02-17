@@ -64,7 +64,7 @@ public class Menu {
 				file = new File("save.txt");
 				if(file.exists()) {
 					System.out.println("carregando");
-					String saver = Save.loadGame(10);
+					String saver = Save.loadGame(Save.encode);
 					Save.applySave(saver);
 				}
 			}

@@ -3,6 +3,7 @@ package entities;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Comparator;
 import java.util.List;
 
 import Game_main.Game;
@@ -16,7 +17,7 @@ public class Entity {
 	public static BufferedImage money_bag = Game.atlas.getSprite(432, 368, 16, 16);
 	public static BufferedImage enemy = Game.enemy_sheet.getSprite(0, 96, 32,32);
 	
-	private int x, y, WIDTH, HEIGHT;
+	public int x, y, WIDTH, HEIGHT, depht;
 	private BufferedImage sprite;
 	
 	private int maskx, masky, mwidth, mheight;
@@ -34,6 +35,15 @@ public class Entity {
 		this.mheight = height;
 		this.mwidth = width;
 	}
+	
+	public static Comparator<Entity> nodeSortert = new Comparator<Entity>() {
+		
+		@Override
+		public int compare(Entity n0, Entity n1) {
+			if(n1.depht < n0.depht) return +1;
+			if(n1.depht > n0.depht) return -1;
+			return 0;
+		}};
 
 	public void tick() {
 		

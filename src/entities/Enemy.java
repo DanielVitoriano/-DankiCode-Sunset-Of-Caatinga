@@ -52,34 +52,35 @@ public class Enemy extends Entity {
 		}
 	}
 	public void tick() {
+		depht = 0;
 		render_idle();
 		distance = Math.sqrt(Math.pow(this.getX() - Game.player.getX(), 2) + Math.pow(this.getY() - Game.player.getY(), 2));
 		if(distance <= rage && distance >= 16) {
 			
 			/*if(path == null || path.size() == 0) {
-				Vector2i start = new Vector2i((int)this.getX()/16, (int)this.getY()/16);
-				Vector2i end = new Vector2i((int)this.getX()/16, (int)this.getY()/16);
+				Vector2i start = new Vector2i((int)this.x/16, (int)this.y/16);
+				Vector2i end = new Vector2i(Game.player.getX()/16, Game.player.getY()/16);
 				path = AStar.findPath(Game.world, start, end);
 			}
 			followPath(path, (double)speed); */
 			
 			if(this.getX() > Game.player.getX()){
-				this.setX(getX() - speed); //esquerda
+				//this.setX(getX() - speed); //esquerda
 				dir = left_dir;
 				moved = true;
 			}
 			else if(this.getX() < Game.player.getX()) {
-				this.setX(getX() + speed); // direita
+				//this.setX(getX() + speed); // direita
 				dir = right_dir;
 				moved = true;
 			}
 			if(this.getY() > Game.player.getY()) {
-				this.setY(getY() - speed); //cima
+				//this.setY(getY() - speed); //cima
 				dir = up_dir;
 				moved = true;
 			}
 			else if(this.getY() < Game.player.getY()) {
-				this.setY(getY() + speed); //baixo
+				//this.setY(getY() + speed); //baixo
 				dir = down_dir;
 				moved = true;
 			}

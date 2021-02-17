@@ -10,6 +10,6 @@ public class Node {
 		this.parent = parent;
 		this.gCost = gCost;
 		this.hCost = hCost;
-		this.fCost = hCost + gCost;
+		this.fCost = gCost + hCost;
 	}
 }
