@@ -2,11 +2,15 @@ package Game_main;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
@@ -18,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import World.World;
@@ -37,7 +42,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 	public static int money_bags_left = 0;
 	private int cur_level = 1, max_level = 2, framesOver = 0;
 	public static String gameState = "menu";
-	public Random rand = new Random();
+	public static Random rand = new Random();
 	
 	public InputStream stream1 = ClassLoader.getSystemClassLoader().getResourceAsStream("old.ttf");
 	public static Font  oldFont;
@@ -94,9 +99,26 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		frame.add(this);
 		frame.setResizable(false);
 		frame.pack();
+		
+		//mouse e icone da janela
+		Image image2 = null;
+		try {
+			image2 = ImageIO.read(getClass().getResource("/icon.png"));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Image image3 = toolkit.getImage(getClass().getResource("/mira.png"));
+		Cursor c = toolkit.createCustomCursor(image3, new Point(0,0), "img");
+		
+		frame.setCursor(c);
+		frame.setIconImage(image2);
+		frame.setAlwaysOnTop(true);
+		//
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		
 	}
 	//main
 	public static void main(String[] args) {
@@ -139,7 +161,7 @@ public class Game extends Canvas implements Runnable, KeyListener{
 				}
 				String newWorld = "level"  + cur_level + ".png";
 				World.restart_game(newWorld);
-			}
+			} 
 		}
 		else if(gameState == "over"){
 			this.framesOver ++;
@@ -164,8 +186,10 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		if(gameState == "pause") {
 			if(this.saveGame) {
 				this.saveGame = false;
-				String[] opt1 = {"level"};
-				int[] opt2 = {this.cur_level};
+				//
+				String[] opt1 = {"level", "vida"};
+				int[] opt2 = {this.cur_level, (int) player.getLife()};
+				//
 				Save.saveGame(opt1, opt2, Save.encode);
 				System.out.println("jogo salvo, confia!");
 			}
@@ -227,8 +251,11 @@ public class Game extends Canvas implements Runnable, KeyListener{
 		
 		bs.show();
 	}
-	@Override
+
 	public void run() {
+		
+		requestFocus();
+		
 		//frames
 		long lastTime = System.nanoTime();
 		double amoutOfTicks = 60.0;
@@ -259,12 +286,12 @@ public class Game extends Canvas implements Runnable, KeyListener{
 			}
 			stop();
 	}
-	@Override
+
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
+
 	public void keyPressed(KeyEvent e) {
 		//direita
 		if(e.getKeyCode() == KeyEvent.VK_D) {
@@ -299,14 +326,17 @@ public class Game extends Canvas implements Runnable, KeyListener{
 			if(gameState == "menu" || gameState == "pause") menu.enter = true;
 		}
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			Menu.pause = true;
-			gameState = "pause";
+			if(gameState == "normal") {
+				Menu.pause = true;
+				gameState = "pause";
+			}
+			
 		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 			if(gameState == "pause")saveGame = true;
 		}
 	}
-	@Override
+
 	public void keyReleased(KeyEvent e) {
 		//direita
 		if(e.getKeyCode() == KeyEvent.VK_D) {

@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import Game_main.Game;
 import World.Camera;
+import World.World;
 
 public class Shoot extends Entity{
 	
@@ -25,6 +26,10 @@ public class Shoot extends Entity{
 		
 		life --;
 		if(life < 0) {
+			Game.shoots.remove(this);
+			return;
+		}
+		if(World.isFree(x, y) == false) {
 			Game.shoots.remove(this);
 			return;
 		}

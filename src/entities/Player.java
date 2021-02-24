@@ -56,7 +56,6 @@ public class Player extends Entity{
 		}
 
 	}
-	@Override
 	public void tick() {
 		depht = 1;
 		render_idle();
@@ -150,7 +149,7 @@ public class Player extends Entity{
 	public void setMoney(float money) {
 		this.money = money;
 	}
-	@Override
+
 	public void render(Graphics g) {
 		
 		if(isShooting) {

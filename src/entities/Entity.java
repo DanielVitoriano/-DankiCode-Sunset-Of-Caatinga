@@ -38,7 +38,7 @@ public class Entity {
 	
 	public static Comparator<Entity> nodeSortert = new Comparator<Entity>() {
 		
-		@Override
+
 		public int compare(Entity n0, Entity n1) {
 			if(n1.depht < n0.depht) return +1;
 			if(n1.depht > n0.depht) return -1;
@@ -49,21 +49,28 @@ public class Entity {
 		
 	}
 	
-	public void followPath(List<Node> path, double speed) {
+	public void followPath(List<Node> path) {
 		if(path != null) {
 			if(path.size() > 0) {
 				Vector2i target = path.get(path.size() - 1).tile;
 				//xprev = x;
 				//yprev = y;
-				if(x < target.x * 16) x+= speed;
-				else if(x > target.x * 16) x-= speed;
-
-				if(y < target.y * 16) y+= speed;
-				else if(y > target.y * 16) y-= speed;
+				if(x < target.x * 16) {
+					x++;
+				}else if(x > target.x * 16) {
+					x--;
+				}
+				
+				if(y < target.y * 16) {
+					y++;
+				}else if(y > target.y * 16) {
+					y--;
+				}
 				
 				if(x == target.x * 16 && y == target.y * 16) {
 					path.remove(path.size() - 1);
 				}
+				
 			}
 		}
 	}

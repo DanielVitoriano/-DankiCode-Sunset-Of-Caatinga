@@ -54,6 +54,9 @@ public class Save {
 					Game.money_bags_left = 0;
 					Menu.pause = false;
 					break;
+				case "vida":
+					Game.player.setLife(Integer.parseInt(spl2[1]));
+					break;
 			}
 		}
 	}

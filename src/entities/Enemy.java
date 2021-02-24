@@ -6,16 +6,15 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import Game_main.Game;
-import World.AStar;
 import World.Camera;
-import World.Vector2i;
+import World.World;
 
 public class Enemy extends Entity {
 
 	private int speed = 1, rage = 70, life = 2;
 	double distance;
 	
-	public int dir, right_dir = 1, left_dir = 2, up_dir = 3, down_dir = 4;
+	public int dir, right_dir = 1, left_dir = 2, up_dir = 3, down_dir = 4, time_remaning = 200; //time_remaning é o tempo q vai demorar pro inimigo sumir dps de morrer
 	
 	private int frames = 0, frames_idle = 0, index_idle = 0, maxFrames = 5, index = 0, maxIndex = 7;
 	private boolean moved = false;
@@ -25,7 +24,7 @@ public class Enemy extends Entity {
 	private BufferedImage[] right_enemy;
 	private BufferedImage[] left_enemy;
 	private BufferedImage[] up_enemy;
-	private BufferedImage[] down_enemy;
+	private BufferedImage[] down_enemy, dead_enemy;
 	
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -36,6 +35,7 @@ public class Enemy extends Entity {
 		left_enemy = new BufferedImage[9];
 		up_enemy = new BufferedImage[10];
 		down_enemy = new BufferedImage[10];
+		dead_enemy = new BufferedImage[1];
 		
 
 		for(int i = 0; i < 9; i ++) {
@@ -50,6 +50,11 @@ public class Enemy extends Entity {
 		for(int i = 0; i < 10; i ++) {
 			down_enemy[i] = Game.enemy_sheet.getSprite(0 + (i * 32), 128, 32, 32);
 		}
+		//carrecar sprite de morte
+		for(int i = 0; i < dead_enemy.length; i ++) {
+			dead_enemy[i] = Game.enemy_sheet.getSprite(0 + (i *32), 352, 32, 32);
+		}
+		
 	}
 	public void tick() {
 		depht = 0;
@@ -64,23 +69,23 @@ public class Enemy extends Entity {
 			}
 			followPath(path, (double)speed); */
 			
-			if(this.getX() > Game.player.getX()){
-				//this.setX(getX() - speed); //esquerda
+			if(this.getX() > Game.player.getX() && World.isFree(this.getX() - speed, this.getY()) && !isColliding(this.getX() - speed, this.getY())){
+				this.setX(getX() - speed); //esquerda
 				dir = left_dir;
 				moved = true;
 			}
-			else if(this.getX() < Game.player.getX()) {
-				//this.setX(getX() + speed); // direita
+			else if(this.getX() < Game.player.getX()  && World.isFree(this.getX() + speed, this.getY()) && !isColliding(this.getX() + speed, this.getY())) {
+				this.setX(getX() + speed); // direita
 				dir = right_dir;
 				moved = true;
 			}
-			if(this.getY() > Game.player.getY()) {
-				//this.setY(getY() - speed); //cima
+			if(this.getY() > Game.player.getY() && World.isFree(this.getX(), this.getY() - speed) && !isColliding(this.getX(), this.getY() - speed)) {
+				this.setY(getY() - speed); //cima
 				dir = up_dir;
 				moved = true;
 			}
-			else if(this.getY() < Game.player.getY()) {
-				//this.setY(getY() + speed); //baixo
+			else if(this.getY() < Game.player.getY() && World.isFree(this.getX(), this.getY() + speed) && !isColliding(this.getX(), this.getY() + speed)) {
+				this.setY(getY() + speed); //baixo
 				dir = down_dir;
 				moved = true;
 			}
@@ -116,31 +121,40 @@ public class Enemy extends Entity {
 		}
 				
 		collidingShoot();
-		if(life<=0) destroySelf();
+		if(life<=0) {
+			time_remaning --;
+			if(time_remaning <= 0) destroySelf();
+		}
 		
 	}
-	
-	@Override
+
 	public void render(Graphics g) {
-		if(moved == false) {
-			g.drawImage(idle_enemy[index_idle], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-		}
-		else if(dir == up_dir) {
-			g.drawImage(up_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-		}
-		else if(dir == down_dir) {
-			g.drawImage(down_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-		}
-		else if(dir == right_dir) {
-			g.drawImage(right_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-		}
-		else if(dir == left_dir) {
-			g.drawImage(left_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+		if(life > 0) {
+			if(moved == false) {
+	
+				g.drawImage(idle_enemy[index_idle], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			}
+			else if(dir == up_dir) {
+				g.drawImage(up_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			}
+			else if(dir == down_dir) {
+				g.drawImage(down_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			}
+			else if(dir == right_dir) {
+				g.drawImage(right_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			}
+			else if(dir == left_dir) {
+				g.drawImage(left_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			}
+		}else {
+			for(int i = 0; i < dead_enemy.length; i++) {
+				g.drawImage(dead_enemy[index], this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+			
+			}
 		}
 	}
 
 	public void render_idle() {
-		
 		for(int i = 0; i < 4; i++) {
 			if(dir == up_dir) {
 				idle_enemy[i] = Game.enemy_sheet.getSprite(0 + (i * 32), 0, 32, 32);
