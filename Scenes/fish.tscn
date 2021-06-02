@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Sprites/assets/props/sardine2.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/assets/props/sardine1.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/fish.gd" type="Script" id=3]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 1 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 11.732, 6.51539 )
+
+[node name="AnimatedSprite" type="AnimatedSprite"]
+rotation = 1.5708
+scale = Vector2( 1.2, 1.2 )
+frames = SubResource( 1 )
+animation = "idle"
+frame = 1
+script = ExtResource( 3 )
+
+[node name="area" type="Area2D" parent="."]
+scale = Vector2( 1, 1 )
+collision_layer = 4
+collision_mask = 0
+
+[node name="collision" type="CollisionShape2D" parent="area"]
+position = Vector2( 0.166855, 0.166855 )
+shape = SubResource( 2 )
+
+[connection signal="body_entered" from="area" to="." method="_on_area_body_entered"]
