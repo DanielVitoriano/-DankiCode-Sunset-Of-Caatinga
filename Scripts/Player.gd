@@ -54,4 +54,3 @@ func Fire():
 		fish.dir = dir_fish
 		fish.FlipFish(rot_fish)
 		get_parent().add_child(fish)
-		print(fish.rotation)
