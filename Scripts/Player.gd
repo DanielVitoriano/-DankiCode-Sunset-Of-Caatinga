@@ -4,7 +4,7 @@ extends KinematicBody2D
 var life = 3;
 
 #variáveis de física
-var run_speed = 350
+var run_speed = 300
 var jump_speed = -1000
 var gravity = 2500
 var dir_fish = Vector2(0, -1)
