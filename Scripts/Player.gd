@@ -12,7 +12,6 @@ var rot_fish = false
 #demais
 var can_move = true
 var can_fire = true
-var brilinho = false
 
 #preloads
 var pre_fish = preload("res://Scenes/bullet_fish.tscn")
@@ -36,7 +35,6 @@ func Move():
 			$collision.position.x = 10
 			$pos_fish.position.x = 50
 			$pos_fish.rotation = 0
-			$brilinho.rotation = -125
 
 		if left:
 			dir_fish = Vector2(-1 , 0)
@@ -46,9 +44,6 @@ func Move():
 			$collision.position.x = -10
 			$pos_fish.position.x = -50
 			$pos_fish.rotation = - 180
-			$brilinho.rotation = 0
-			
-
 
 func _physics_process(delta):
 	velocity.y += gravity * delta
@@ -67,5 +62,3 @@ func Fire():
 func play_on_enter():
 	$anim.play("on_enter")
 
-func Brilinho(boolean):
-	$brilinho.emitting = boolean

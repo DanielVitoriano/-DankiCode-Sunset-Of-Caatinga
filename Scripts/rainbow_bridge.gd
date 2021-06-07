@@ -10,10 +10,11 @@ func _ready():
 #func _process(_delta):
 #	pass
 
-func _on_brilinho_body_entered(body):
-	body.Brilinho(true)
-	print(body)
+func _on_brilinho_body_entered(_body):
+	$brilinho_part.emitting = true
+	pass
 
 
-func _on_brilinho_body_exited(body):
-	body.Brilinho(false)
+func _on_brilinho_body_exited(_body):
+	$brilinho_part.emitting = false
+	pass

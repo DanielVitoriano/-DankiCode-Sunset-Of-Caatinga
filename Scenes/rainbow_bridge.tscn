@@ -1,7 +1,32 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Sprites/assets/props/rainbow_bridge.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/rainbow_bridge.gd" type="Script" id=2]
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 0, 0.355556, 0.677778, 1 )
+colors = PoolColorArray( 1, 0.21875, 0.21875, 1, 0.434875, 1, 0.230469, 1, 0.269531, 0.674713, 1, 1, 0.994873, 0.34375, 1, 1 )
+
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=1]
+emission_shape = 2
+emission_box_extents = Vector3( 100, 1, 1 )
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+gravity = Vector3( 0, -98, 0 )
+initial_velocity = 5.0
+initial_velocity_random = 1.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+damping = 90.0
+damping_random = 1.0
+angle = 90.0
+angle_random = 1.0
+scale = 3.0
+scale_random = 1.0
+color_ramp = SubResource( 3 )
 
 [node name="rainbow_bridge" type="StaticBody2D"]
 collision_layer = 16
@@ -19,6 +44,12 @@ collision_layer = 0
 [node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="brilinho"]
 position = Vector2( 0, -27.4033 )
 polygon = PoolVector2Array( -101.692, 32.027, -91.9275, 16.9079, -62.0043, 0.528961, -33.3411, -4.82571, 12.961, -6.08562, 56.4283, -0.101002, 76.902, 7.77351, 92.651, 22.5776, 109.345, 49.0359, 84.7765, 18.1679, 60.9327, 5.22223, 14.9327, -2.77777, -20.5673, -1.27777, -58.5673, 3.72223, -90.5673, 20.2222, -105.472, 43.0513 )
+
+[node name="brilinho_part" type="Particles2D" parent="."]
+position = Vector2( 0.707108, 13.0815 )
+emitting = false
+amount = 24
+process_material = SubResource( 1 )
 
 [connection signal="body_entered" from="brilinho" to="." method="_on_brilinho_body_entered"]
 [connection signal="body_exited" from="brilinho" to="." method="_on_brilinho_body_exited"]
