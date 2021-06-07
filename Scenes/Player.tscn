@@ -1,10 +1,45 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Sprites/Player/gato.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 30.5635, 21.9763 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "on_enter"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("cat:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 51.317 ) ]
+}
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0, 0.277778, 0.611111, 1 )
+colors = PoolColorArray( 1, 0.195313, 0.195313, 1, 0.416708, 0.991211, 0.189724, 1, 0.20602, 0.509638, 0.995117, 1, 0.915764, 0.292969, 1, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="ParticlesMaterial" id=5]
+flag_disable_z = true
+gravity = Vector3( 0, -98, 0 )
+initial_velocity = 50.0
+orbit_velocity = 0.0
+orbit_velocity_random = 1.0
+angle = 90.0
+angle_random = 1.0
+scale = 2.0
+scale_random = 1.0
+color_ramp = SubResource( 4 )
 
 [node name="Player" type="KinematicBody2D"]
 collision_mask = 6
@@ -19,3 +54,15 @@ shape = SubResource( 1 )
 
 [node name="pos_fish" type="Position2D" parent="."]
 position = Vector2( -50, -0.375 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+smoothing_enabled = true
+
+[node name="anim" type="AnimationPlayer" parent="."]
+anims/on_enter = SubResource( 2 )
+
+[node name="brilinho" type="Particles2D" parent="."]
+position = Vector2( 17.2305, 22.8492 )
+amount = 12
+process_material = SubResource( 5 )
