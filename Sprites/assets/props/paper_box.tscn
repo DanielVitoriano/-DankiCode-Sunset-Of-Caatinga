@@ -4,10 +4,10 @@
 [ext_resource path="res://Scripts/paper_box.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 20.0276, 11.3648 )
+extents = Vector2( 20.2678, 13.6822 )
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 10, 0.757294 )
+extents = Vector2( 15.8869, 0.757294 )
 
 [sub_resource type="Animation" id=3]
 resource_name = "on_enter_box"
@@ -25,25 +25,21 @@ tracks/0/keys = {
 }
 
 [node name="paper_box" type="StaticBody2D"]
+collision_layer = 0
 script = ExtResource( 2 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="Sprite" type="Sprite" parent="CollisionShape2D"]
+[node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, -0.297302 )
 texture = ExtResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0.35355, 0.707108 )
+shape = SubResource( 1 )
 
 [node name="enter_area" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="enter_area"]
-position = Vector2( 0.31498, -13.8591 )
+position = Vector2( 0.31498, -14.0359 )
 shape = SubResource( 2 )
 
 [node name="position" type="Position2D" parent="."]
