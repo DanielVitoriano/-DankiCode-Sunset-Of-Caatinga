@@ -8,6 +8,12 @@ var jumps = 0
 func _ready():
 	pass # Replace with function body.
 
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+
+
 func _on_Area2D_body_entered(_body):
 	var particle = pre_particle.instance()
 	particle.global_position = $pos.global_position

@@ -15,9 +15,7 @@ animations = [ {
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 11.732, 6.51539 )
 
-[node name="AnimatedSprite" type="AnimatedSprite" groups=[
-"fish_player",
-]]
+[node name="AnimatedSprite" type="AnimatedSprite"]
 rotation = 1.5708
 scale = Vector2( 1.2, 1.2 )
 frames = SubResource( 1 )
